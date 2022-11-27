@@ -26,6 +26,16 @@
       <Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
     </Compile>
 
+    <Compile Include="..\..\Unity\Codes\Model\Demo\Computer\Computer.cs" Link="Demo\Computer.cs" />
+
+    <Compile Include="..\..\Unity\Codes\Model\Demo\Computer\KeyboardComponent.cs" Link="Demo\KeyboardComponent.cs" />
+
+    <Compile Include="..\..\Unity\Codes\Model\Demo\Computer\MonitorComponent.cs" Link="Demo\MonitorComponent.cs" />
+
+    <Compile Include="..\..\Unity\Codes\Model\Demo\Computer\MouseComponent.cs" Link="Demo\MouseComponent.cs" />
+
+    <Compile Include="..\..\Unity\Codes\Model\Demo\Computer\PCCaseComponent.cs" Link="Demo\PCCaseComponent.cs" />
+
     <Compile Include="..\..\Unity\Codes\Model\Demo\Unit\UnitType.cs">
       <Link>Demo\Unit\UnitType.cs</Link>
     </Compile>
@@ -116,5 +126,8 @@
     <ProjectReference Include="..\..\ThirdParty\ShareLib\ShareLib.csproj" />
     <ProjectReference Include="..\..\ThirdParty\UnityEngine\UnityEngine.csproj" />
     <ProjectReference Include="..\..\Tools\Analyzer\Analyzer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Demo\Computer\" />
   </ItemGroup>
 </Project>

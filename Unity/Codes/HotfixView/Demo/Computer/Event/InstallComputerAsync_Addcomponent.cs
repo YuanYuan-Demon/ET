@@ -12,7 +12,7 @@ namespace ET
         protected override async ETTask Run(InstallComputerAsync arg)
         {
             Log.Debug("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            await TimerComponent.Instance.WaitAsync(3000);
+            await TimerComponent.Instance.WaitAsync(100);
             var computer = arg.Computer;
             computer.AddComponent<PCCaseComponent>();
             computer.AddComponent<MonitorComponent>();

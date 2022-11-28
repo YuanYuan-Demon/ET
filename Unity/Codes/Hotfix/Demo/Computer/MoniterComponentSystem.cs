@@ -10,7 +10,8 @@ namespace ET
     {
         public static void Display(this MonitorComponent self)
         {
-            Log.Debug("Moniters start display!!!");
+            if (self != null)
+                Log.Debug("Moniters start display!!!");
         }
     }
 }

@@ -10,7 +10,14 @@ namespace ET
     {
         public static void StartPower(this PCCaseComponent self)
         {
-            Log.Debug($"PCCase start power!!!");
+            if (self is null)
+            {
+                Log.Debug($"PCCase is null");
+            }
+            else
+            {
+                Log.Debug($"PCCase start power!!!");
+            }
         }
     }
 }

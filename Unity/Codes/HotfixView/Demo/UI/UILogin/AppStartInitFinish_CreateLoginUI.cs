@@ -19,12 +19,21 @@ namespace ET
             //Game.EventSystem.Publish(new InstallComputer() { Computer = computer });
             Game.EventSystem.PublishAsync(new InstallComputerAsync() { Computer = computer }).Coroutine();
             Log.Debug("222222222222222222");
-
+            var result = await TestAsync();
             computer.Start();
-
+            Log.Debug(result.ToString());
             await TimerComponent.Instance.WaitAsync(3000);
 
             computer.Dispose();
+        }
+
+        public async ETTask<int> TestAsync()
+        {
+            const int Time = 1000;
+            Log.Debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+            await TimerComponent.Instance.WaitAsync(Time);
+            Log.Debug("yyyyyyyyyyyyyyyyyyyyyyyyyy");
+            return Time;
         }
     }
 }

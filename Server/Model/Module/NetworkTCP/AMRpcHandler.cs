@@ -3,7 +3,7 @@ using System;
 namespace ET
 {
     [MessageHandler]
-    public abstract class AMRpcHandler<Request, Response>: IMHandler where Request : class, IRequest where Response : class, IResponse
+    public abstract class AMRpcHandler<Request, Response> : IMHandler where Request : class, IRequest where Response : class, IResponse
     {
         protected abstract ETTask Run(Session session, Request request, Response response, Action reply);
 
@@ -19,7 +19,7 @@ namespace ET
                 Request request = message as Request;
                 if (request == null)
                 {
-                    throw new Exception($"消息类型转换错误: {message.GetType().Name} to {typeof (Request).Name}");
+                    throw new Exception($"消息类型转换错误: {message.GetType().Name} to {typeof(Request).Name}");
                 }
 
                 int rpcId = request.RpcId;
@@ -60,12 +60,12 @@ namespace ET
 
         public Type GetMessageType()
         {
-            return typeof (Request);
+            return typeof(Request);
         }
 
         public Type GetResponseType()
         {
-            return typeof (Response);
+            return typeof(Response);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace ET
         {
             // Unit View层
             // 这里可以改成异步加载，demo就不搞了
-
+            args.Unit.UnitType = UnitType.Player;
             switch (args.Unit.UnitType)
             {
                 case UnitType.Player:

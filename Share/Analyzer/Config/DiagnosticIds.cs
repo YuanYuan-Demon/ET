@@ -53,6 +53,18 @@
         public const string EntitySystemMethodNeedSystemOfAttrAnalyzerRuleId = "ET0025";
 
         public const string FiberLogAnalyzerRuleId = "ET0026";
+        
+        
+        public const string EntityHashCodeAnalyzerRuleId = "ET0027";
 
+        public const string EntityComponentChildAnalyzerRuleId = "ET0028";
+
+        public const string EntityCannotDeclareGenericTypeRuleId = "ET0029";
+
+        public const string NetMessageAnalyzerRuleId = "ET0030";
+
+        public const string DisableNewAnalyzerRuleId = "ET0031";
+
+        public const string DisableNormalClassDeclaratonInModelAssemblyAnalyzerRuleId = "ET0032";
     }
 }

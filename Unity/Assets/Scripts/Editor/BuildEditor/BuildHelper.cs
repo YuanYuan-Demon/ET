@@ -1,7 +1,6 @@
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace ET
@@ -11,48 +10,21 @@ namespace ET
         private const string relativeDirPrefix = "../Release";
 
         public static string BuildFolder = "../Release/{0}/StreamingAssets/";
-        
-        
+
         [InitializeOnLoadMethod]
         public static void ReGenerateProjectFiles()
         {
-            if (Unity.CodeEditor.CodeEditor.CurrentEditor.GetType().Name== "RiderScriptEditor")
-            {
-                FieldInfo generator = Unity.CodeEditor.CodeEditor.CurrentEditor.GetType().GetField("m_ProjectGeneration", BindingFlags.Static | BindingFlags.NonPublic);
-                var syncMethod = generator.FieldType.GetMethod("Sync");
-                syncMethod.Invoke(generator.GetValue(Unity.CodeEditor.CodeEditor.CurrentEditor), null);
-            }
-            else
-            {
-                Unity.CodeEditor.CodeEditor.CurrentEditor.SyncAll();
-            }
-            
-            Debug.Log("ReGenerateProjectFiles finished.");
+            Unity.CodeEditor.CodeEditor.CurrentEditor.SyncAll();
         }
-
-              
-#if ENABLE_DLL
-        [MenuItem("ET/ChangeDefine/Remove ENABLE_DLL")]
-        public static void RemoveEnableDll()
-        {
-            EnableDefineSymbols("ENABLE_DLL", false);
-        }
-#else
-        [MenuItem("ET/ChangeDefine/Add ENABLE_DLL")]
-        public static void AddEnableDll()
-        {
-            EnableDefineSymbols("ENABLE_DLL", true);
-        }
-#endif
 
 #if ENABLE_VIEW
-        [MenuItem("ET/ChangeDefine/Remove ENABLE_VIEW")]
+        [MenuItem("ET/ChangeDefine/Remove ENABLE_VIEW", false, ETMenuItemPriority.ChangeDefine)]
         public static void RemoveEnableView()
         {
             EnableDefineSymbols("ENABLE_VIEW", false);
         }
 #else
-        [MenuItem("ET/ChangeDefine/Add ENABLE_VIEW")]
+        [MenuItem("ET/ChangeDefine/Add ENABLE_VIEW", false, ETMenuItemPriority.ChangeDefine)]
         public static void AddEnableView()
         {
             EnableDefineSymbols("ENABLE_VIEW", true);
@@ -60,7 +32,7 @@ namespace ET
 #endif
         public static void EnableDefineSymbols(string symbols, bool enable)
         {
-            Log.Debug($"EnableDefineSymbols {symbols} {enable}");
+            Debug.Log($"EnableDefineSymbols {symbols} {enable}");
             string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
             var ss = defines.Split(';').ToList();
             if (enable)
@@ -69,6 +41,7 @@ namespace ET
                 {
                     return;
                 }
+
                 ss.Add(symbols);
             }
             else
@@ -77,16 +50,18 @@ namespace ET
                 {
                     return;
                 }
+
                 ss.Remove(symbols);
             }
-            Log.Debug($"EnableDefineSymbols {symbols} {enable}");
+
+            Debug.Log($"EnableDefineSymbols {symbols} {enable}");
             defines = string.Join(";", ss);
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, defines);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
-        
-        public static void Build(PlatformType type, BuildAssetBundleOptions buildAssetBundleOptions, BuildOptions buildOptions, bool clearFolder)
+
+        public static void Build(PlatformType type, BuildOptions buildOptions)
         {
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
             string programName = "ET";
@@ -107,32 +82,25 @@ namespace ET
                 case PlatformType.MacOS:
                     buildTarget = BuildTarget.StandaloneOSX;
                     break;
-                
                 case PlatformType.Linux:
                     buildTarget = BuildTarget.StandaloneLinux64;
                     break;
             }
 
-            string fold = string.Format(BuildFolder, type);
-
-            if (clearFolder && Directory.Exists(fold))
-            {
-                Directory.Delete(fold, true);
-            }
-            Directory.CreateDirectory(fold);
-
-            UnityEngine.Debug.Log("start build assetbundle");
-            BuildPipeline.BuildAssetBundles(fold, buildAssetBundleOptions, buildTarget);
-
-            UnityEngine.Debug.Log("finish build assetbundle");
-
             AssetDatabase.Refresh();
-            string[] levels = {
-                "Assets/Scenes/Init.unity",
-            };
-            UnityEngine.Debug.Log("start build exe");
-            BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
-            UnityEngine.Debug.Log("finish build exe");
+
+            Debug.Log("start build exe");
+
+            string[] levels = { "Assets/Scenes/Init.unity" };
+            BuildReport report = BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
+            if (report.summary.result != BuildResult.Succeeded)
+            {
+                Debug.Log($"BuildResult:{report.summary.result}");
+                return;
+            }
+
+            Debug.Log("finish build exe");
+            EditorUtility.OpenWithDefaultApp(relativeDirPrefix);
         }
     }
 }

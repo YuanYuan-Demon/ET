@@ -158,12 +158,22 @@ namespace {{namespaceName}}
                 string argsVars = string.Join(", ", argsVarsList);
                 string argsTypes = string.Join(", ", argsTypesList);
                 string argsTypesVars = string.Join(", ", argsTypeVarsList);
-                string argsTypesUnderLine = string.Join("_", argsTypesList).Replace(", ", "_").Replace(".", "_").Replace("<", "_").Replace(">", "_");
+                string argsTypesUnderLine = string.Join("_", argsTypesList).Replace(", ", "_").Replace(".", "_")
+                        .Replace("<", "_").Replace(">", "_").Replace("[]","Array").Replace("(","_").Replace(")","_");
                 string argsTypesWithout0 = string.Join(", ", argsTypesWithout0List);
                 string argsVarsWithout0 = string.Join(", ", argsVarsWithout0List);
                 string argsTypesVarsWithout0 = string.Join(", ", argsTypeVarsWithout0List);
 
                 SpeicalProcessForArgs();
+                
+                if (methodSymbol.ReturnType.ToDisplayString() == "void")
+                {
+                    code = code.Replace("$returnType$", "void");
+                    code = code.Replace("$return$", "");
+                }else{
+                    code = code.Replace("$returnType$", methodSymbol.ReturnType.ToDisplayString());
+                    code = code.Replace("$return$", "return ");
+                }
                 
                 code = code.Replace("$attribute$", attributeString);
                 code = code.Replace("$attributeType$", attributeType);

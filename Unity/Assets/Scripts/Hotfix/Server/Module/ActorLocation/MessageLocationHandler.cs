@@ -2,14 +2,12 @@
 
 namespace ET.Server
 {
-    [EnableClass]
-    public abstract class MessageLocationHandler<E, Message>: IMHandler where E : Entity where Message : class, ILocationMessage
+    public abstract class MessageLocationHandler<E, Message>: HandlerObject, IMHandler where E : Entity where Message : class, ILocationMessage
     {
         protected abstract ETTask Run(E entity, Message message);
 
         public async ETTask Handle(Entity entity, Address fromAddress, MessageObject actorMessage)
         {
-            using MessageObject _ = actorMessage;
             Fiber fiber = entity.Fiber();
             if (actorMessage is not Message message)
             {
@@ -23,7 +21,8 @@ namespace ET.Server
                 return;
             }
             
-            MessageResponse response = new() {RpcId = message.RpcId};
+            MessageResponse response = ObjectPool.Instance.Fetch<MessageResponse>();
+            response.RpcId = message.RpcId;
             fiber.Root.GetComponent<ProcessInnerSender>().Reply(fromAddress, response);
 
             await this.Run(e, message);
@@ -42,8 +41,7 @@ namespace ET.Server
     
     
     
-    [EnableClass]
-    public abstract class MessageLocationHandler<E, Request, Response>: IMHandler where E : Entity where Request : MessageObject, ILocationRequest where Response : MessageObject, ILocationResponse
+    public abstract class MessageLocationHandler<E, Request, Response>: HandlerObject, IMHandler where E : Entity where Request : MessageObject, ILocationRequest where Response : MessageObject, ILocationResponse
     {
         protected abstract ETTask Run(E unit, Request request, Response response);
 
@@ -51,7 +49,6 @@ namespace ET.Server
         {
             try
             {
-                using MessageObject _ = actorMessage;
                 Fiber fiber = entity.Fiber();
                 if (actorMessage is not Request request)
                 {
@@ -82,7 +79,7 @@ namespace ET.Server
                     response.Message = exception.ToString();
                 }
                 response.RpcId = rpcId;
-                fiber.ProcessInnerSender.Reply(fromAddress, response);
+                fiber.Root.GetComponent<ProcessInnerSender>().Reply(fromAddress, response);
             }
             catch (Exception e)
             {
